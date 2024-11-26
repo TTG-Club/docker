@@ -13,7 +13,7 @@ services:
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       interval: 3s
-      timeout: 20s
+      timeout: 5s
       retries: 10
     environment:
       MYSQL_DATABASE: ${API_MYSQL_DATABASE:?err}
@@ -24,7 +24,9 @@ services:
   api:
     image: ${API_IMAGE:-magistrus/ttg-api-${ENV_TYPE:?err}}
     depends_on:
-      - db-api
+      db-api:
+        condition: service_healthy
+        restart: true
     ports:
       - ${API_PORT:-8080}:8080
     profiles:
