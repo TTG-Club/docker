@@ -1,0 +1,5 @@
+name: ttg-core-${ENV_TYPE:?err}
+
+include:
+  - ./services/compose.api.yaml
+  - ./services/compose.app.yaml

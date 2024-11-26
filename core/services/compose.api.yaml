@@ -1,0 +1,40 @@
+services:
+  db-api:
+    container_name: db-api-${ENV_TYPE:?err}
+    image: mysql:8
+    volumes:
+      - ../db/api:/var/lib/mysql
+    ports:
+      - ${API_MYSQL_PORT:-33166}:3306
+    profiles:
+      - api
+      - all
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 3s
+      timeout: 20s
+      retries: 10
+    environment:
+      MYSQL_DATABASE: ${API_MYSQL_DATABASE:?err}
+      MYSQL_USER: ${API_MYSQL_USERNAME:?err}
+      MYSQL_PASSWORD: ${API_MYSQL_PASSWORD:?err}
+      MYSQL_ROOT_PASSWORD: ${API_MYSQL_ROOT_PASSWORD:?err}
+
+  api:
+    container_name: api-${ENV_TYPE:?err}
+    image: ${API_IMAGE:-magistrus/ttg-api-${ENV_TYPE:?err}}
+    depends_on:
+      - db-api
+    ports:
+      - ${API_PORT:-8080}:8080
+    profiles:
+      - api
+      - all
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: ${ENV_TYPE:?err}
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-api:3306/${API_MYSQL_DATABASE:?err}?ssl=false&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: ${API_MYSQL_USERNAME:?err}
+      SPRING_DATASOURCE_PASSWORD: ${API_MYSQL_PASSWORD:?err}
