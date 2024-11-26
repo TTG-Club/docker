@@ -1,6 +1,5 @@
 services:
   db-app:
-    container_name: db-app-${ENV_TYPE:?err}
     image: mysql:8
     volumes:
       - ../db/app:/var/lib/mysql
@@ -23,7 +22,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${APP_MYSQL_ROOT_PASSWORD:?err}
 
   app:
-    container_name: app-${ENV_TYPE:?err}
     image: ${APP_IMAGE:-magistrus/ttg-app-${ENV_TYPE:?err}}
     depends_on:
       db-app:

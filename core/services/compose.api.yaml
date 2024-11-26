@@ -1,6 +1,5 @@
 services:
   db-api:
-    container_name: db-api-${ENV_TYPE:?err}
     image: mysql:8
     volumes:
       - ../db/api:/var/lib/mysql
@@ -23,7 +22,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${API_MYSQL_ROOT_PASSWORD:?err}
 
   api:
-    container_name: api-${ENV_TYPE:?err}
     image: ${API_IMAGE:-magistrus/ttg-api-${ENV_TYPE:?err}}
     depends_on:
       - db-api
