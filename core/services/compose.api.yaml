@@ -35,6 +35,7 @@ services:
     restart: unless-stopped
     environment:
       APP_URL: ${APP_URL:?err}
+      APP_LOCAL_URL: ${APP_LOCAL_URL:?err}:${APP_PORT:?err}
       API_TOKEN: ${API_TOKEN:?err}
       API_SECRET: ${API_SECRET:?err}
       SPRING_PROFILES_ACTIVE: ${ENV_TYPE:?err}
