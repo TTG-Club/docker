@@ -9,5 +9,6 @@ services:
     restart: unless-stopped
     environment:
       NUXT_API_URL: ${APP_API_URL:?err}
-      NUXT_API_TOKEN: ${APP_API_TOKEN:?err}
+      NUXT_API_TOKEN: ${API_TOKEN:?err}
+      NUXT_API_SECRET: ${API_SECRET:?err}
       NUXT_SITE_INDEXABLE: ${APP_SITE_INDEXABLE:-false}
