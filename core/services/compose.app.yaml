@@ -1,32 +1,6 @@
 services:
-  db-app:
-    image: mysql:8
-    volumes:
-      - ../db/app:/var/lib/mysql
-    ports:
-      - ${APP_MYSQL_PORT:-33266}:3306
-    profiles:
-      - app
-      - all
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      interval: 3s
-      timeout: 5s
-      retries: 10
-    environment:
-      MYSQL_DATABASE: ${APP_MYSQL_DATABASE:?err}
-      MYSQL_USER: ${APP_MYSQL_USERNAME:?err}
-      MYSQL_PASSWORD: ${APP_MYSQL_PASSWORD:?err}
-      MYSQL_ROOT_PASSWORD: ${APP_MYSQL_ROOT_PASSWORD:?err}
-
   app:
     image: ${APP_IMAGE:-magistrus/ttg-app-${ENV_TYPE:?err}}
-    depends_on:
-      db-app:
-        condition: service_healthy
-        restart: true
     ports:
       - ${APP_PORT:-3000}:3000
     profiles:
@@ -34,13 +8,7 @@ services:
       - all
     restart: unless-stopped
     environment:
-      NUXT_SITE_URL: ${APP_SITE_URL:?err}
+      NUXT_API_URL: ${API_LOCAL_URL:?err}:${API_PORT:?err}
+      NUXT_API_TOKEN: ${API_TOKEN:?err}
+      NUXT_API_SECRET: ${API_SECRET:?err}
       NUXT_SITE_INDEXABLE: ${APP_SITE_INDEXABLE:-false}
-      NUXT_API_URL: ${APP_API_URL:?err}
-      NUXT_API_TOKEN: ${APP_API_TOKEN:?err}
-      NUXT_API_SECRET: ${APP_API_SECRET:?err}
-      NUXT_MYSQL_URI: mysql://${APP_MYSQL_USERNAME:?err}:${APP_MYSQL_PASSWORD:?err}@db-app:3306/${APP_MYSQL_DATABASE:?err}?ssl=false&characterEncoding=UTF-8
-      NUXT_EMAIL_SECRET: ${APP_EMAIL_SECRET:?err}
-      NUXT_NODEMAILER_FROM: '"TTG Support" <${APP_EMAIL_USERNAME:?err}>'
-      NUXT_NODEMAILER_AUTH_USER: ${APP_EMAIL_USERNAME:?err}
-      NUXT_NODEMAILER_AUTH_PASS: ${APP_EMAIL_PASSWORD:?err}
