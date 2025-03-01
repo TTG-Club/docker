@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     user: postgres
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d ${API_POSTGRES_USERNAME:?err} -U ${API_POSTGRES_PASSWORD:?err}" ]
+      test: [ "CMD-SHELL", "pg_isready -d ${API_POSTGRES_DB:?err} -U ${API_POSTGRES_USERNAME:?err}" ]
       interval: 1s
       timeout: 5s
       retries: 10
