@@ -9,7 +9,7 @@ services:
       - api
       - all
     restart: unless-stopped
-    user: ${API_POSTGRES_USERNAME:?err}
+    user: www-data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d ${API_POSTGRES_USERNAME:?err} -U ${API_POSTGRES_PASSWORD:?err}" ]
       interval: 1s
