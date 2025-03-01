@@ -1,25 +1,23 @@
 services:
   db-api:
-    image: mysql:8
+    image: postgres:17
     volumes:
-      - ../db/api:/var/lib/mysql
+      - ../db/api:/var/lib/postgresql/data
     ports:
-      - ${API_MYSQL_PORT:-33166}:3306
+      - ${API_POSTGRES_PORT:-54322}:5432
     profiles:
       - api
       - all
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      interval: 3s
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 1s
       timeout: 5s
       retries: 10
     environment:
-      MYSQL_DATABASE: ${API_MYSQL_DATABASE:?err}
-      MYSQL_USER: ${API_MYSQL_USERNAME:?err}
-      MYSQL_PASSWORD: ${API_MYSQL_PASSWORD:?err}
-      MYSQL_ROOT_PASSWORD: ${API_MYSQL_ROOT_PASSWORD:?err}
+      POSTGRES_DB: ${API_POSTGRES_DB:?err}
+      POSTGRES_USER: ${API_POSTGRES_USERNAME:?err}
+      POSTGRES_PASSWORD: ${API_POSTGRES_PASSWORD:?err}
 
   api:
     image: ${API_IMAGE:-magistrus/ttg-api-${ENV_TYPE:?err}}
@@ -39,8 +37,8 @@ services:
       API_TOKEN: ${API_TOKEN:?err}
       API_SECRET: ${API_SECRET:?err}
       SPRING_PROFILES_ACTIVE: ${ENV_TYPE:?err}
-      SPRING_DATASOURCE_URL: jdbc:mysql://db-api:3306/${API_MYSQL_DATABASE:?err}?ssl=false&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: ${API_MYSQL_USERNAME:?err}
-      SPRING_DATASOURCE_PASSWORD: ${API_MYSQL_PASSWORD:?err}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-api:5432/${API_POSTGRES_DB:?err}
+      SPRING_DATASOURCE_USERNAME: ${API_POSTGRES_USERNAME:?err}
+      SPRING_DATASOURCE_PASSWORD: ${API_POSTGRES_PASSWORD:?err}
       SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:?err}
 
