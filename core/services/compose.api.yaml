@@ -20,7 +20,7 @@ services:
       POSTGRES_PASSWORD: ${API_POSTGRES_PASSWORD:?err}
 
   api:
-    image: ${API_IMAGE:-magistrus/ttg-api-${ENV_TYPE:?err}}
+    image: ${API_IMAGE:-ghcr.io/ttg-club/core-api-${ENV_TYPE:?err}}
     depends_on:
       db-api:
         condition: service_healthy

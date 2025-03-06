@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${APP_IMAGE:-magistrus/ttg-app-${ENV_TYPE:?err}}
+    image: ${APP_IMAGE:-ghcr.io/ttg-club/core-app-${ENV_TYPE:?err}}
     ports:
       - ${APP_PORT:-3000}:3000
     profiles:
