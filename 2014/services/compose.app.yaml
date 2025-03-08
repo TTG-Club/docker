@@ -4,7 +4,7 @@ services:
     volumes:
       - ../db/app:/var/lib/mysql
     ports:
-      - ${MYSQL_PORT:-3306}:3306
+      - ${APP_MYSQL_PORT:-3306}:3306
     profiles:
       - app
     restart: unless-stopped
@@ -21,6 +21,8 @@ services:
 
   app:
     image: ${APP_IMAGE:?err}
+    volumes:
+      - ${APP_IMAGES_ROOT:?err}:/mnt/images
     depends_on:
       db-app:
         condition: service_healthy
