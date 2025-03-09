@@ -1,0 +1,43 @@
+services:
+  db-app:
+    image: mysql:8.0.27
+    volumes:
+      - ../db/app:/var/lib/mysql
+    ports:
+      - ${APP_MYSQL_PORT:-3306}:3306
+    profiles:
+      - app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    environment:
+      MYSQL_ROOT_PASSWORD: ${APP_MYSQL_ROOT_PASSWORD:?err}
+      MYSQL_USER: ${APP_MYSQL_USER:?err}
+      MYSQL_PASSWORD: ${APP_MYSQL_PASSWORD:?err}
+      MYSQL_DATABASE: ${APP_MYSQL_DATABASE:?err}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  app:
+    image: ${APP_IMAGE:?err}
+    volumes:
+      - ${APP_IMAGES_ROOT:?err}:/mnt/images
+    depends_on:
+      db-app:
+        condition: service_healthy
+        restart: true
+    ports:
+      - ${APP_PORT:-8080}:8080
+    profiles:
+      - app
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: ${ENV_TYPE:?err}
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-app:3306/${APP_MYSQL_DATABASE:?err}
+      SPRING_DATASOURCE_USERNAME: ${APP_MYSQL_USER:?err}
+      SPRING_DATASOURCE_PASSWORD: ${APP_MYSQL_PASSWORD:?err}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:?err}
+      FRONTEND_APPLICATION_SHA: ${FRONTEND_APPLICATION_SHA:?err}
+
