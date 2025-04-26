@@ -8,6 +8,8 @@ services:
     profiles:
       - app
     restart: unless-stopped
+    cap_add:
+      - SYS_NICE
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 1s
