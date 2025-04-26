@@ -20,7 +20,10 @@ services:
       MYSQL_USER: ${APP_MYSQL_USER:?err}
       MYSQL_PASSWORD: ${APP_MYSQL_PASSWORD:?err}
       MYSQL_DATABASE: ${APP_MYSQL_DATABASE:?err}
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb-numa-interleave=0
 
   app:
     image: ${APP_IMAGE:?err}
