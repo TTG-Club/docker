@@ -1,0 +1,51 @@
+services:
+  5e24-dev-db:
+    image: postgres:17
+    volumes:
+      - ../db/api:/var/lib/postgresql/data
+    ports:
+      - ${API_POSTGRES_PORT:-54322}:5432
+    profiles:
+      - api
+      - all
+    restart: unless-stopped
+    networks:
+      - 5e24-dev-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d ${API_POSTGRES_DB:?err} -U ${API_POSTGRES_USERNAME:?err}" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    environment:
+      POSTGRES_DB: ${API_POSTGRES_DB:?err}
+      POSTGRES_USER: ${API_POSTGRES_USERNAME:?err}
+      POSTGRES_PASSWORD: ${API_POSTGRES_PASSWORD:?err}
+
+  5e24-dev-api:
+    image: ${API_IMAGE:?err}
+    depends_on:
+      5e24-dev-db:
+        condition: service_healthy
+        restart: true
+    profiles:
+      - api
+      - all
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-network
+      - traefik.http.services.5e24-dev-api.loadbalancer.server.port=8080
+    networks:
+      - 5e24-dev-network
+      - traefik-network
+    environment:
+      APP_URL: https://${DOMAIN:?err}
+      APP_LOCAL_URL: http://5e24-dev-app:3000
+      API_TOKEN: ${API_TOKEN:?err}
+      API_SECRET: ${API_SECRET:?err}
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://5e24-dev-db:5432/${API_POSTGRES_DB:?err}
+      SPRING_DATASOURCE_USERNAME: ${API_POSTGRES_USERNAME:?err}
+      SPRING_DATASOURCE_PASSWORD: ${API_POSTGRES_PASSWORD:?err}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:?err}
+

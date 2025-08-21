@@ -1,0 +1,56 @@
+services:
+  5e14-prod-db:
+    image: mysql:8.0.27
+    volumes:
+      - ../db/app:/var/lib/mysql
+    ports:
+      - ${APP_MYSQL_PORT:-3306}:3306
+    profiles:
+      - app
+    restart: unless-stopped
+    networks:
+      - 5e14-prod-network
+    cap_add:
+      - SYS_NICE
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    environment:
+      MYSQL_ROOT_PASSWORD: ${APP_MYSQL_ROOT_PASSWORD:?err}
+      MYSQL_USER: ${APP_MYSQL_USER:?err}
+      MYSQL_PASSWORD: ${APP_MYSQL_PASSWORD:?err}
+      MYSQL_DATABASE: ${APP_MYSQL_DATABASE:?err}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb-numa-interleave=0
+
+  5e14-prod-app:
+    image: ${APP_IMAGE:?err}
+    volumes:
+      - ${APP_IMAGES_ROOT:?err}:/mnt/images
+    depends_on:
+      5e14-prod-db:
+        condition: service_healthy
+        restart: true
+    profiles:
+      - app
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-network
+      - traefik.http.services.5e14-prod-app.loadbalancer.server.port=8080
+    networks:
+      - 5e14-prod-network
+      - traefik-network
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://5e14-prod-db:3306/${APP_MYSQL_DATABASE:?err}
+      SPRING_DATASOURCE_USERNAME: ${APP_MYSQL_USER:?err}
+      SPRING_DATASOURCE_PASSWORD: ${APP_MYSQL_PASSWORD:?err}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:?err}
+      FRONTEND_APPLICATION_SHA: ${FRONTEND_APPLICATION_SHA:?err}
+      APP_URL: https://${DOMAIN:?err}
+      APP_IMG_URL: ${APP_IMG_URL:?err}

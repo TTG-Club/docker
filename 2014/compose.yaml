@@ -1,4 +1,0 @@
-name: ttg-2014-${ENV_TYPE:?err}
-
-include:
-  - ./services/compose.app.yaml

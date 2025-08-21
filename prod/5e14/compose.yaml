@@ -1,0 +1,11 @@
+name: ttg-5e14-prod
+
+include:
+  - ./services/compose.app.yaml
+
+networks:
+  5e14-prod-network:
+    external: false
+    internal: true
+  traefik-network:
+    external: true

@@ -1,16 +1,21 @@
 services:
-  app:
-    image: ${APP_IMAGE:-ghcr.io/ttg-club/core-app-${ENV_TYPE:?err}}
-    ports:
-      - ${APP_PORT:-3000}:3000
+  5e24-prod-app:
+    image: ${APP_IMAGE:?err}
     profiles:
       - app
       - all
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-network
+      - traefik.http.services.5e24-prod-app.loadbalancer.server.port=3000
+    networks:
+      - 5e24-prod-network
+      - traefik-network
     environment:
-      NUXT_SITE_URL: ${APP_URL:?err}
+      NUXT_SITE_URL: https://${DOMAIN:?err}
       NUXT_SITE_INDEXABLE: ${APP_SITE_INDEXABLE:-false}
-      NITRO_API_URL: ${API_LOCAL_URL:?err}:8080
+      NITRO_API_URL: http://5e24-prod-api:8080
       NITRO_API_TOKEN: ${API_TOKEN:?err}
       NITRO_API_SECRET: ${API_SECRET:?err}
       NITRO_S3_ENDPOINT: ${S3_ENDPOINT:?err}

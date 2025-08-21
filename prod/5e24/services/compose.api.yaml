@@ -1,14 +1,16 @@
 services:
-  db-api:
+  5e24-prod-db:
     image: postgres:17
     volumes:
-      - ../db/api:/var/lib/postgresql/data
+      - ../db/5e24-prod-db:/var/lib/postgresql/data
     ports:
       - ${API_POSTGRES_PORT:-54322}:5432
     profiles:
       - api
       - all
     restart: unless-stopped
+    networks:
+      - 5e24-prod-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d ${API_POSTGRES_DB:?err} -U ${API_POSTGRES_USERNAME:?err}" ]
       interval: 1s
@@ -20,24 +22,29 @@ services:
       POSTGRES_PASSWORD: ${API_POSTGRES_PASSWORD:?err}
 
   api:
-    image: ${API_IMAGE:-ghcr.io/ttg-club/core-api-${ENV_TYPE:?err}}
+    image: ${API_IMAGE:?err}
     depends_on:
-      db-api:
+      5e24-prod-db:
         condition: service_healthy
         restart: true
-    ports:
-      - ${API_PORT:-8080}:8080
     profiles:
       - api
       - all
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-network
+      - traefik.http.services.5e24-prod-api.loadbalancer.server.port=8080
+    networks:
+      - 5e24-prod-network
+      - traefik-network
     environment:
-      APP_URL: ${APP_URL:?err}
-      APP_LOCAL_URL: ${APP_LOCAL_URL:?err}:3000
+      APP_URL: https://${DOMAIN:?err}
+      APP_LOCAL_URL: http://5e24-prod-app:3000
       API_TOKEN: ${API_TOKEN:?err}
       API_SECRET: ${API_SECRET:?err}
-      SPRING_PROFILES_ACTIVE: ${ENV_TYPE:?err}
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db-api:5432/${API_POSTGRES_DB:?err}
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://5e24-prod-db:5432/${API_POSTGRES_DB:?err}
       SPRING_DATASOURCE_USERNAME: ${API_POSTGRES_USERNAME:?err}
       SPRING_DATASOURCE_PASSWORD: ${API_POSTGRES_PASSWORD:?err}
       SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD:?err}

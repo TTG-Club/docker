@@ -1,0 +1,56 @@
+api:
+  dashboard: true
+  debug: true
+
+entryPoints:
+  http:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+          permanent: true
+  https:
+    address: ":443"
+
+serversTransport:
+  insecureSkipVerify: true
+
+providers:
+  file:
+    directory: /config
+    watch: true
+  docker:
+    exposedByDefault: false
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: support@ttg.club
+      storage: /certs/letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: http
+
+tls:
+  stores:
+    paid:
+      certificates:
+        - certFile: /certs/paid/2024-10-10/fullchain.pem
+          keyFile: /certs/paid/private.key
+  options:
+    paid-dhparam:
+      dhparam: /certs/paid/dhparam.pem
+    default:
+      minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      preferServerCipherSuites: true
+
+log:
+  level: ERROR
+  filePath: "/var/log/traefik/traefik.log"
+
+accessLog:
+  filePath: "/var/log/traefik/access.log"
