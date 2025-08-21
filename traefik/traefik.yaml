@@ -1,6 +1,5 @@
 api:
   dashboard: true
-  insecure: false
   debug: true
 
 entryPoints:
@@ -32,21 +31,6 @@ certificatesResolvers:
       storage: /certs/letsencrypt/acme.json
       httpChallenge:
         entryPoint: http
-
-tls:
-  stores:
-    default:
-      defaultCertificate:
-        certFile: /certs/paid/2024-10-10/fullchain.pem
-        keyFile: /certs/paid/private.key
-  options:
-    default:
-      minVersion: VersionTLS12
-      cipherSuites:
-        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-      preferServerCipherSuites: true
-      dhparam: /certs/paid/dhparam.pem
 
 log:
   level: ERROR
