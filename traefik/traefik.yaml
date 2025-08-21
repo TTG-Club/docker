@@ -35,10 +35,10 @@ certificatesResolvers:
 
 tls:
   stores:
-    paid:
-      certificates:
-        - certFile: /certs/paid/2024-10-10/fullchain.pem
-          keyFile: /certs/paid/private.key
+    default:
+      defaultCertificate:
+        certFile: /certs/paid/2024-10-10/fullchain.pem
+        keyFile: /certs/paid/private.key
   options:
     paid-dhparam:
       dhparam: /certs/paid/dhparam.pem
