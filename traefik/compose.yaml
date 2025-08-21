@@ -14,18 +14,10 @@ services:
       - TZ=UTC
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik.yml:/traefik.yml:ro
+      - ./traefik.yaml:/traefik.yaml:ro
       - ./certs:/certs:ro
       - ./config:/config:ro
       - ./logs:/var/log/traefik
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entryPoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=support@ttg.club"
-      - "--certificatesresolvers.myresolver.acme.storage=/certs/letsencrypt/acme.json"
 
 networks:
   traefik-network:
