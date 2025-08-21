@@ -37,7 +37,7 @@ tls:
   stores:
     default:
       defaultCertificate:
-        certFile: /certs/paid/2024-10-10/bundle.crt
+        certFile: /certs/paid/2024-10-10/fullchain.pem
         keyFile: /certs/paid/private.key
   options:
     default:
