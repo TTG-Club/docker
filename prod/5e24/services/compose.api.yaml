@@ -21,7 +21,7 @@ services:
       POSTGRES_USER: ${API_POSTGRES_USERNAME:?err}
       POSTGRES_PASSWORD: ${API_POSTGRES_PASSWORD:?err}
 
-  api:
+  5e24-prod-api:
     image: ${API_IMAGE:?err}
     depends_on:
       5e24-prod-db:
