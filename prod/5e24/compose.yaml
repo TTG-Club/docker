@@ -7,6 +7,5 @@ include:
 networks:
   5e24-prod-network:
     external: false
-    internal: true
   traefik-network:
     external: true

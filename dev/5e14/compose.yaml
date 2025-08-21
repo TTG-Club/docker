@@ -6,6 +6,5 @@ include:
 networks:
   5e14-dev-network:
     external: false
-    internal: true
   traefik-network:
     external: true
