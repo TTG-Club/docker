@@ -1,0 +1,23 @@
+services:
+  dozzle:
+    image: amir20/dozzle:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data:/data
+    networks:
+      - traefik-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-network
+      - traefik.http.routers.dozzle-https.rule=Host(`dozzle.ttg.club`)
+      - traefik.http.routers.dozzle-https.entrypoints=https
+      - traefik.http.routers.dozzle-https.tls=true
+      - traefik.http.routers.dozzle-https.service=dozzle
+      - traefik.http.services.dozzle.loadbalancer.server.port=8080
+    environment:
+      DOZZLE_AUTH_PROVIDER: simple
+
+networks:
+  traefik-network:
+    external: true
