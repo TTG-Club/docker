@@ -37,7 +37,7 @@ tls:
   stores:
     default:
       defaultCertificate:
-        certFile: /certs/paid/2024-10-10/root-bundle.crt
+        certFile: /certs/paid/2024-10-10/bundle.crt
         keyFile: /certs/paid/private.key
   options:
     paid-dhparam:
